@@ -1,0 +1,932 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adidas 5th Ave | Staffbase</title>
+    <style>
+        /* =========================================
+           GLOBAL & SHARED STYLES (Adidas 5th Ave Theme)
+           ========================================= */
+        :root {
+            /* BRAND PALETTE */
+            --adi-black: #000000;
+            --adi-dark-gray: #1a1a1a;
+            --adi-white: #FFFFFF;
+            
+            /* ACCENT: SOLAR YELLOW (Performance/Adizero) */
+            --adi-accent: #ede600;
+
+            /* FUNCTIONAL COLORS */
+            --bg-color: #F0F0F0;
+            --card-bg: #FFFFFF;
+            --text-main: #000000;
+            --text-sub: #767676;
+            --border-color: #e6e6e6;
+            
+            --font-stack: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            font-family: var(--font-stack);
+            background-color: var(--bg-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .plugin-wrapper {
+            width: 100%;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .app-section {
+            display: none;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .app-section.active-app {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* =========================================
+           APP 1: ROSTER (SCHEDULE)
+           ========================================= */
+        .shifts-card {
+            background-color: var(--card-bg);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            padding-bottom: 20px;
+            /* The Three Stripes Header Border */
+            border-top: 6px solid var(--adi-black);
+        }
+
+        .header {
+            padding: 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header h2 {
+            margin: 0;
+            font-size: 24px;
+            color: var(--adi-black);
+            font-weight: 800; /* Bolder for Adidas feel */
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            line-height: 1;
+        }
+
+        .subtitle {
+            font-size: 12px;
+            color: var(--text-sub);
+            margin-top: 6px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Navigation Button */
+        .btn-nav-pulse {
+            background-color: var(--adi-black);
+            color: var(--adi-white);
+            border: none;
+            padding: 10px 18px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%); /* Slight angle cut */
+        }
+
+        .btn-nav-pulse:hover {
+            background-color: var(--adi-accent);
+            color: var(--adi-black);
+        }
+
+        /* Calendar */
+        .calendar-wrapper {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 10px;
+        }
+
+        .calendar-weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            margin-bottom: 12px;
+            justify-items: center;
+        }
+
+        .weekday {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-sub);
+            text-transform: uppercase;
+        }
+
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            row-gap: 8px;
+            justify-items: center;
+        }
+
+        .day {
+            width: 32px;
+            height: 32px;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            font-weight: 600;
+        }
+
+        .day:hover {
+            background-color: var(--bg-color);
+            font-weight: bold;
+        }
+
+        .day.has-shift {
+            background-color: var(--adi-black);
+            color: var(--adi-white);
+            clip-path: polygon(10% 0, 100% 0, 100% 100%, 0% 100%); /* Adidas angle */
+        }
+        
+        .day.has-shift.drop-day {
+            background-color: var(--adi-accent); /* Solar Yellow for Drop Days */
+            color: var(--adi-black);
+        }
+
+        .section-title {
+            padding: 0 20px;
+            margin: 15px 0 10px 0;
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--text-main);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border-color);
+        }
+
+        /* Shift List */
+        .shift-list {
+            list-style: none;
+            padding: 0 20px;
+            margin: 0;
+        }
+
+        .shift-item {
+            display: flex;
+            align-items: stretch;
+            background: #fff;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .shift-item:hover {
+            background: #fafafa;
+        }
+
+        .shift-indicator {
+            width: 4px;
+            margin-right: 16px;
+            background: #ccc;
+        }
+
+        .type-floor { background-color: var(--adi-black); }
+        .type-launch { background-color: var(--adi-accent); } /* High Priority */
+        .type-vm { background-color: #767676; }
+
+        .shift-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .shift-role {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--adi-black);
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+        }
+
+        .shift-meta {
+            font-size: 12px;
+            color: var(--text-sub);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .date-badge {
+            width: 50px;
+            height: 50px;
+            border: 2px solid var(--adi-black);
+            background: #fff;
+            text-align: center;
+            margin-left: 12px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .date-month {
+            background-color: var(--adi-black);
+            color: var(--adi-white);
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 0;
+            text-transform: uppercase;
+        }
+        
+        /* Highlight specific dates */
+        .shift-item.launch .date-month {
+            background-color: var(--adi-accent);
+            color: var(--adi-black);
+        }
+
+        .date-day {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--adi-black);
+        }
+
+        /* Modal */
+        .modal-backdrop {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: flex-end;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            z-index: 100;
+        }
+
+        .modal-backdrop.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background-color: white;
+            width: 100%;
+            border-top: 6px solid var(--adi-accent);
+            padding: 30px 24px 24px;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            box-sizing: border-box;
+        }
+
+        .modal-backdrop.active .modal-card {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .modal-title-group h3 {
+            margin: 0;
+            font-size: 22px;
+            color: var(--adi-black);
+            font-weight: 800;
+            text-transform: uppercase;
+            line-height: 1.1;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background-color: var(--bg-color);
+            border-left: 3px solid var(--adi-black);
+        }
+
+        .detail-text h4 {
+            margin: 0;
+            font-size: 10px;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-text p {
+            margin: 2px 0 0 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--adi-black);
+        }
+
+        .btn-swap {
+            background-color: var(--adi-black);
+            color: var(--adi-white);
+            border: none;
+            padding: 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            border: 1px solid var(--adi-black);
+            transition: all 0.2s;
+        }
+        
+        .btn-swap:hover {
+            background-color: var(--adi-white);
+            color: var(--adi-black);
+        }
+
+        .btn-swap:disabled {
+            background-color: #ccc;
+            border-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* =========================================
+           APP 2: THE PULSE (HUB & NEWS)
+           ========================================= */
+        .pulse-card {
+            background: var(--card-bg);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+            min-height: 600px;
+            border-top: 6px solid var(--adi-accent); /* Solar Yellow */
+        }
+
+        .nav-header-pulse {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .nav-header-pulse h2 {
+            margin: 0;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: -0.5px;
+            font-size: 22px;
+        }
+
+        .back-btn {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-sub);
+            letter-spacing: 1px;
+        }
+        
+        .back-btn:hover { color: var(--adi-black); }
+
+        /* Quick Actions Grid (Solving the "Bunker" issue) */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 20px;
+            gap: 10px;
+            background: #fafafa;
+        }
+
+        .action-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+
+        .action-icon {
+            width: 45px;
+            height: 45px;
+            background: var(--adi-white);
+            border: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.2s;
+        }
+        
+        .action-item:hover .action-icon {
+            border-color: var(--adi-black);
+            background: var(--adi-black);
+            color: var(--adi-white);
+        }
+
+        .action-label {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-main);
+            text-align: center;
+        }
+
+        /* Drop Intel Section */
+        .drop-intel-banner {
+            background-color: var(--adi-black);
+            color: var(--adi-white);
+            padding: 20px;
+            margin: 0 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .drop-intel-banner::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 60px;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(237, 230, 0, 0.2));
+        }
+
+        .tag-urgent {
+            background-color: var(--adi-accent);
+            color: var(--adi-black);
+            font-size: 9px;
+            font-weight: 800;
+            padding: 2px 6px;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+
+        .drop-title {
+            font-size: 18px;
+            font-weight: 800;
+            margin: 0 0 4px 0;
+            text-transform: uppercase;
+            font-style: italic; /* Speed/Motion */
+        }
+
+        .drop-info {
+            font-size: 12px;
+            color: #ccc;
+            margin-bottom: 15px;
+        }
+
+        .btn-outline-white {
+            background: transparent;
+            border: 1px solid var(--adi-white);
+            color: var(--adi-white);
+            padding: 8px 12px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            cursor: pointer;
+        }
+        
+        .btn-outline-white:hover {
+            background: var(--adi-white);
+            color: var(--adi-black);
+        }
+
+        /* News Feed */
+        .news-feed {
+            padding: 20px;
+        }
+
+        .news-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 20px;
+        }
+
+        .news-thumb {
+            width: 80px;
+            height: 80px;
+            background-color: #333;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+        
+        .news-content h4 {
+            margin: 0 0 5px 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--adi-black);
+        }
+        
+        .news-content p {
+            margin: 0;
+            font-size: 12px;
+            color: var(--text-sub);
+            line-height: 1.4;
+        }
+        
+        .video-tag {
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--adi-accent);
+            text-transform: uppercase;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* Loaders & Status */
+        .loading-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #ffffff;
+            border-bottom-color: transparent;
+            border-radius: 50%;
+            display: inline-block;
+            animation: rotation 1s linear infinite;
+        }
+
+        .status-message {
+            font-size: 13px;
+            text-align: center;
+            margin-top: 10px;
+            min-height: 20px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .status-success {
+            color: #00754a; /* Darker green for readability */
+        }
+        
+        @keyframes rotation {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="plugin-wrapper">
+
+        <!-- APP 1: THE ROSTER -->
+        <div id="app-shifts" class="app-section active-app">
+            <div class="shifts-card">
+
+                <div class="header">
+                    <div>
+                        <h2>My Roster</h2>
+                        <div class="subtitle">Flagship • 5th Ave NYC</div>
+                    </div>
+                    <button id="nav-to-pulse" class="btn-nav-pulse">
+                        The Pulse ➔
+                    </button>
+                </div>
+
+                <div class="calendar-wrapper">
+                    <div class="calendar-weekdays">
+                        <div class="weekday">Mon</div>
+                        <div class="weekday">Tue</div>
+                        <div class="weekday">Wed</div>
+                        <div class="weekday">Thu</div>
+                        <div class="weekday">Fri</div>
+                        <div class="weekday">Sat</div>
+                        <div class="weekday">Sun</div>
+                    </div>
+                    <div class="calendar-days">
+                        <div class="day">1</div>
+                        <div class="day">2</div>
+                        <div class="day">3</div>
+                        <div class="day">4</div>
+                        <!-- Shift: Drop Prep -->
+                        <div class="day has-shift"
+                            onclick="openModal('Visual Merchandising Reset', '22:00 - 06:00', 'Zone A: Originals', 'Dec 05')">5
+                        </div>
+                        <!-- Shift: The "Clopen" / Drop Day -->
+                        <div class="day has-shift drop-day"
+                            onclick="openModal('Launch Support: AE1 Drop', '07:00 - 15:00', '5th Ave Entrance', 'Dec 06')">
+                            6</div>
+                        <div class="day">7</div>
+                        <div class="day has-shift"
+                            onclick="openModal('Floor Specialist: Footwear', '12:00 - 20:00', 'Zone B: Performance', 'Dec 08')">
+                            8</div>
+                        <div class="day">9</div>
+                        <div class="day">10</div>
+                        <div class="day">11</div>
+                        <div class="day">12</div>
+                        <div class="day">13</div>
+                        <div class="day">14</div>
+                        <div class="day">15</div>
+                        <div class="day">16</div>
+                        <div class="day">17</div>
+                        <div class="day">18</div>
+                        <div class="day">19</div>
+                        <div class="day">20</div>
+                        <div class="day">21</div>
+                        <div class="day">22</div>
+                        <div class="day">23</div>
+                        <div class="day">24</div>
+                        <div class="day">25</div>
+                        <div class="day">26</div>
+                        <div class="day">27</div>
+                        <div class="day">28</div>
+                        <div class="day">29</div>
+                        <div class="day">30</div>
+                        <div class="day">31</div>
+                    </div>
+                </div>
+
+                <h3 class="section-title">Upcoming Shifts</h3>
+
+                <ul class="shift-list">
+                    <!-- Shift 1 -->
+                    <li class="shift-item"
+                        onclick="openModal('Visual Merchandising Reset', '22:00 - 06:00', 'Zone A: Originals', 'Dec 05')">
+                        <div class="shift-indicator type-vm"></div>
+                        <div class="shift-content">
+                            <div class="shift-role">VM Reset: Retro</div>
+                            <div class="shift-meta"><span>📍</span> Zone A: Originals</div>
+                            <div class="shift-meta" style="margin-top: 2px;"><span>⏰ 10:00 PM - 06:00 AM</span></div>
+                        </div>
+                        <div class="date-badge">
+                            <div class="date-month">DEC</div>
+                            <div class="date-day">05</div>
+                        </div>
+                    </li>
+
+                    <!-- Shift 2 (High Priority Drop) -->
+                    <li class="shift-item launch"
+                        onclick="openModal('Launch Support: AE1 Drop', '07:00 - 15:00', '5th Ave Entrance', 'Dec 06')">
+                        <div class="shift-indicator type-launch"></div>
+                        <div class="shift-content">
+                            <div class="shift-role">Launch Support: AE1</div>
+                            <div class="shift-meta"><span>🔥</span> High Heat Drop</div>
+                            <div class="shift-meta" style="margin-top: 2px;"><span>⏰ 07:00 AM - 03:00 PM</span></div>
+                        </div>
+                        <div class="date-badge">
+                            <div class="date-month">DEC</div>
+                            <div class="date-day">06</div>
+                        </div>
+                    </li>
+
+                    <!-- Shift 3 -->
+                    <li class="shift-item"
+                        onclick="openModal('Floor Specialist: Footwear', '12:00 - 20:00', 'Zone B: Performance', 'Dec 08')">
+                        <div class="shift-indicator type-floor"></div>
+                        <div class="shift-content">
+                            <div class="shift-role">Floor Specialist</div>
+                            <div class="shift-meta"><span>📍</span> Zone B: Performance</div>
+                            <div class="shift-meta" style="margin-top: 2px;"><span>⏰ 12:00 PM - 08:00 PM</span></div>
+                        </div>
+                        <div class="date-badge">
+                            <div class="date-month">DEC</div>
+                            <div class="date-day">08</div>
+                        </div>
+                    </li>
+                </ul>
+
+                <!-- Shift Details Modal -->
+                <div class="modal-backdrop" id="shiftModal">
+                    <div class="modal-card">
+                        <div class="modal-header">
+                            <div class="modal-title-group">
+                                <h3 id="modalTitle">Shift Name</h3>
+                                <div class="subtitle" id="modalDate">Date</div>
+                            </div>
+                            <div style="cursor:pointer; padding:5px; font-size:24px;" onclick="closeModal()">✕</div>
+                        </div>
+                        <div class="detail-row">
+                            <div style="font-size:20px;">📍</div>
+                            <div class="detail-text">
+                                <h4>Location</h4>
+                                <p id="modalLocation">Loc</p>
+                            </div>
+                        </div>
+                        <div class="detail-row">
+                            <div style="font-size:20px;">⏰</div>
+                            <div class="detail-text">
+                                <h4>Time</h4>
+                                <p id="modalTime">Time</p>
+                            </div>
+                        </div>
+                        <div class="detail-row" style="background: #fafafa; border-color: #ede600;">
+                            <div style="font-size:20px;">👕</div>
+                            <div class="detail-text">
+                                <h4>Uniform</h4>
+                                <p>Current Season Originals (Black)</p>
+                            </div>
+                        </div>
+                        <div class="status-message" id="statusMessage"></div>
+                        <button class="btn-swap" id="swapBtn" onclick="triggerSwap()">
+                            <span>Post to Swap Board</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- APP 2: THE PULSE (Hub) -->
+        <div id="app-pulse" class="app-section">
+            <div class="pulse-card">
+                <div class="nav-header-pulse">
+                    <button class="back-btn" onclick="navToShifts()">← Roster</button>
+                    <h2>The Pulse</h2>
+                    <div style="width: 50px;"></div> <!-- Spacer -->
+                </div>
+
+                <!-- Quick Actions (Solving "The Bunker") -->
+                 <div class="quick-actions">
+                     <div class="action-item">
+                         <div class="action-icon">📄</div>
+                         <div class="action-label">Pay Stub</div>
+                     </div>
+                     <div class="action-item">
+                         <div class="action-icon">🌴</div>
+                         <div class="action-label">PTO</div>
+                     </div>
+                     <div class="action-item">
+                         <div class="action-icon">💬</div>
+                         <div class="action-label">Chat</div>
+                     </div>
+                     <div class="action-item">
+                         <div class="action-icon">👟</div>
+                         <div class="action-label">Stock</div>
+                     </div>
+                 </div>
+
+                 <!-- High Heat Drop (Solving "Confirmed App Humiliation") -->
+                 <h3 class="section-title">Drop Intel</h3>
+                 <div class="drop-intel-banner">
+                     <span class="tag-urgent">In 24 Hours</span>
+                     <div class="drop-title">AE1 "With Love" Restock</div>
+                     <div class="drop-info">
+                         Units: 150 pairs<br>
+                         Limit: 1 per customer<br>
+                         Talking Point: "Explain the energy return of the Jet Boost."
+                     </div>
+                     <button class="btn-outline-white">View Launch Guide</button>
+                 </div>
+
+                 <!-- News Feed (Solving "Broken Telephone") -->
+                 <h3 class="section-title">Team Updates</h3>
+                 <div class="news-feed">
+                     
+                     <!-- CEO Update -->
+                     <div class="news-item">
+                         <div class="news-thumb" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Bj%C3%B8rn_Gulden.jpg/440px-Bj%C3%B8rn_Gulden.jpg'); background-size:cover; background-position:center;">
+                             <div style="font-size:10px;">▶️</div>
+                         </div>
+                         <div class="news-content">
+                             <span class="video-tag">CEO Update</span>
+                             <h4>Winning with "Local Relevance"</h4>
+                             <p>Bjørn Gulden explains why the 5th Ave store is critical to the US strategy.</p>
+                         </div>
+                     </div>
+
+                     <!-- Recognition (Solving "Recognition Black Hole") -->
+                     <div class="news-item">
+                         <div class="news-thumb" style="background-color: #ede600; color: black;">
+                             ✋
+                         </div>
+                         <div class="news-content">
+                             <span class="video-tag" style="color:#000;">High Five</span>
+                             <h4>Big Win, Marcus!</h4>
+                             <p>Store Manager recognized you for that Adizero Pro 3 upsell yesterday. Keep it up.</p>
+                         </div>
+                     </div>
+
+                 </div>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // ==========================================
+        // 1. NAVIGATION CONTROLLER
+        // ==========================================
+        const appShifts = document.getElementById('app-shifts');
+        const appPulse = document.getElementById('app-pulse');
+
+        // Go to Pulse
+        document.getElementById('nav-to-pulse').onclick = function () {
+            appShifts.classList.remove('active-app');
+            appPulse.classList.add('active-app');
+        };
+
+        // Go to Shifts
+        function navToShifts() {
+            appPulse.classList.remove('active-app');
+            appShifts.classList.add('active-app');
+        }
+
+        // ==========================================
+        // 2. MODAL & SWAP LOGIC
+        // ==========================================
+        const modal = document.getElementById('shiftModal');
+        const swapBtn = document.getElementById('swapBtn');
+        const statusMsg = document.getElementById('statusMessage');
+
+        function openModal(title, time, location, date) {
+            document.getElementById('modalTitle').innerText = title;
+            document.getElementById('modalTime').innerText = time;
+            document.getElementById('modalLocation').innerText = location;
+            document.getElementById('modalDate').innerText = date;
+
+            // Reset UI
+            statusMsg.innerText = '';
+            statusMsg.className = 'status-message';
+            swapBtn.disabled = false;
+            swapBtn.innerHTML = `<span>Post to Swap Board</span>`;
+            
+            // Highlight button if it's the "Clopening" shift to induce the "After" relief
+            if(title.includes('AE1')) {
+                swapBtn.innerHTML = `<span>Post Swap (Urgent)</span>`;
+            }
+
+            modal.classList.add('active');
+        }
+
+        function closeModal() { modal.classList.remove('active'); }
+
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+
+        async function triggerSwap() {
+            swapBtn.disabled = true;
+            swapBtn.innerHTML = `<span class="loading-spinner"></span> Notifying Team...`;
+
+            // Simulation of API call
+            const payload = {
+                "content": { "en_US": { "text": "Marcus posted a swap request for Dec 06 (Launch Shift)" } }
+            };
+
+            // Mimic network delay
+            setTimeout(() => {
+                swapBtn.innerHTML = `<span>✔ Posted to Marketplace</span>`;
+                statusMsg.className = 'status-message status-success';
+                statusMsg.innerText = 'Request Sent. 3 people notified.';
+                setTimeout(() => { closeModal(); }, 2000);
+            }, 1200);
+        }
+    </script>
+</body>
+
+</html>
