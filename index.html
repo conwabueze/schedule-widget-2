@@ -322,6 +322,9 @@
             flex-direction: column;
             gap: 16px;
             box-sizing: border-box;
+            /* Added to handle roster growth without affecting dimensions */
+            max-height: 80vh;
+            overflow-y: auto;
         }
 
         .modal-backdrop.active .modal-card {
@@ -396,6 +399,73 @@
             background-color: #ccc;
             border-color: #ccc;
             cursor: not-allowed;
+        }
+
+        /* ROSTER ADDITIONS */
+        .roster-section-title {
+            margin: 10px 0 8px 0; 
+            font-size: 10px; 
+            color: var(--text-sub); 
+            text-transform: uppercase; 
+            letter-spacing: 1px; 
+            font-weight: 700;
+        }
+
+        .roster-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            background: #fff;
+            border: 1px solid var(--border-color);
+        }
+
+        .roster-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .roster-item:last-child {
+            border-bottom: none;
+        }
+
+        .avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: var(--adi-black);
+            color: var(--adi-white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 700;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+        
+        .avatar.manager {
+            background: var(--adi-accent);
+            color: var(--adi-black);
+        }
+
+        .staff-info {
+            flex-grow: 1;
+        }
+
+        .staff-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--adi-black);
+            line-height: 1.2;
+        }
+
+        .staff-role {
+            font-size: 9px;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            font-weight: 600;
         }
 
         /* =========================================
@@ -752,6 +822,8 @@
                             </div>
                             <div style="cursor:pointer; padding:5px; font-size:24px;" onclick="closeModal()">✕</div>
                         </div>
+                        
+                        <!-- Shift Details -->
                         <div class="detail-row">
                             <div style="font-size:20px;">📍</div>
                             <div class="detail-text">
@@ -773,6 +845,35 @@
                                 <p>Current Season Originals (Black)</p>
                             </div>
                         </div>
+
+                        <!-- TEAMMATES ON SHIFT -->
+                        <div>
+                            <div class="roster-section-title">Team on Shift (3)</div>
+                            <ul class="roster-list">
+                                 <li class="roster-item">
+                                    <div class="avatar manager">MJ</div>
+                                    <div class="staff-info">
+                                        <div class="staff-name">Marcus Jones</div>
+                                        <div class="staff-role">Store Captain</div>
+                                    </div>
+                                </li>
+                                <li class="roster-item">
+                                    <div class="avatar">LC</div>
+                                    <div class="staff-info">
+                                        <div class="staff-name">Lisa Chen</div>
+                                        <div class="staff-role">Runner</div>
+                                    </div>
+                                </li>
+                                <li class="roster-item">
+                                    <div class="avatar">TR</div>
+                                    <div class="staff-info">
+                                        <div class="staff-name">Trey Robinson</div>
+                                        <div class="staff-role">Originals Expert</div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+
                         <div class="status-message" id="statusMessage"></div>
                         <button class="btn-swap" id="swapBtn" onclick="triggerSwap()">
                             <span>Post to Swap Board</span>
